@@ -23,18 +23,33 @@
          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
          http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-  <camelContext id="SampleCamel" xmlns="http://camel.apache.org/schema/spring">
-    <route id="hello">
-      <from uri="timer:hello?period={{timer.period}}"/>
-      <transform>
-        <method ref="myBean" method="saySomething"/>
-      </transform>
-      <filter>
-        <simple>${body} contains 'foo'</simple>
-        <to uri="log:foo"/>
-      </filter>
-      <to uri="stream:out"/>
-    </route>
-  </camelContext>
+    <camelContext id="SampleCamel" xmlns="http://camel.apache.org/schema/spring">
+
+
+        <rest path="/books">
+            <get uri="/">
+                <to uri="direct:books-api"/>
+            </get>
+
+            <get uri="order/{id}" consumes="application/json">
+                <to uri="direct:getBooksByOrder"/>
+            </get>
+        </rest>
+
+
+        <route id="books-api">
+            <from uri="direct:books-api"/>
+            <bean id="databaseService" method="findBooks"
+                  beanType="com.soapassion.camel.springbootcamel.service.DatabaseService"/>
+        </route>
+
+        <route id="getBooksByOrder">
+            <from uri="direct:getBooksByOrder"/>
+            <transform>
+                <constant>Bye World</constant>
+            </transform>
+        </route>
+
+    </camelContext>
 
 </beans>
