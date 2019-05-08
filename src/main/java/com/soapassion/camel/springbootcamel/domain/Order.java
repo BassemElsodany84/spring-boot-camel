@@ -10,10 +10,12 @@ import javax.persistence.Table;
 
 import org.apache.camel.component.jpa.Consumed;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "orders")
 @NamedQuery(name = "new-orders", query = "select order from Order order where order.processed = false")
-public class Order {
+public class Order implements Serializable {
 
     @Id
     @GeneratedValue
@@ -61,5 +63,16 @@ public class Order {
 
     public void setProcessed(boolean processed) {
         this.processed = processed;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", amount=" + amount +
+                ", book=" + book +
+                ", processed=" + processed +
+                '}';
     }
 }
